@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photography & Event Management</title>
+  <style>
+    body { font-family: Arial; margin: 0; padding: 0; background: #f0f0f0; }
+    header, footer { background: #222; color: #fff; padding: 1rem; text-align: center; }
+    .container { padding: 2rem; }
+    form { margin-top: 2rem; background: white; padding: 1rem; border-radius: 8px; }
+    input, textarea { width: 100%; margin: 0.5rem 0; padding: 0.5rem; }
+    button { padding: 0.5rem 1rem; background: #222; color: #fff; border: none; cursor: pointer; }
+    .gallery img { width: 150px; margin: 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Our Photography & Event Services</h1>
+  </header>
+  <div class="container">
+    <h2>Gallery Upload</h2>
+    <form id="uploadForm">
+      <input type="file" name="image" required />
+      <button type="submit">Upload Image</button>
+    </form>
+    <div class="gallery" id="gallery"></div>
+
+    <h2>Book Your Event</h2>
+    <form id="bookingForm">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <input type="date" name="date" required />
+      <textarea name="message" placeholder="Message"></textarea>
+      <button type="submit">Book Now</button>
+    </form>
+  </div>
+  <footer>
+    <p>Contact us at: <a href="https://wa.me/yourNumber" style="color: lightgreen">WhatsApp</a></p>
+    <p><a href="/admin/bookings" style="color: lightblue">Admin Login</a></p>
+  </footer>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch('/api/upload-image', { method: 'POST', body: formData });
+      const data = await res.json();
+      const img = document.createElement('img');
+      img.src = data.imageUrl;
+      document.getElementById('gallery').appendChild(img);
+    });
+
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      const res = await fetch('/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) alert('Booking successful!');
+      else alert('Booking failed. Try again.');
+    });
+  </script>
+</body>
+</html>
